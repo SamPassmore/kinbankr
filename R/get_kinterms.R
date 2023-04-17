@@ -56,7 +56,9 @@ get_structural_vectors = function(kin_types, duplicates, method = "binary"){
 
     listed_languages = unique(kinterms_ss$Language_ID)
 
-    n_comparisons = numbers::bell(length(kin_types))
+    # how many comparisons will there be?
+    n_comparisons = choose(length(kin_types), 2)
+
     structural_vectors = matrix(NA, nrow = length(listed_languages), ncol = n_comparisons)
 
     for(i in seq_along(listed_languages)){
