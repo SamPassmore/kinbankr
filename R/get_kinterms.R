@@ -24,8 +24,17 @@ get_structural_vectors = function(kin_types, duplicates, method = "binary"){
   # Subset (ss) to the kinterms we want
   kinterms_ss = kin_terms[kin_terms$Parameter_ID %in% kin_types,]
 
+  ### This subset needs to be to all languages that contains all kin types ###
+
   # Remove occasions where the kin terms is NA
   kinterms_ss = kinterms_ss[!is.na(kinterms_ss$Form),]
+
+  # only keep languages that contains all kin types
+  kinterms_bylanguage = split(kinterms_ss$Parameter_ID, kinterms_ss$Language_ID)
+  all_kintypes = sapply(kinterms_bylanguage, function(xx) all(kin_types %in% xx))
+  keep_languages = names(all_kintypes)[all_kintypes]
+
+  kinterms_ss = kinterms_ss[kinterms_ss$Language_ID %in% keep_languages,]
 
   if(duplicates == "random"){
     random_slice = kinterms_ss %>%
@@ -53,7 +62,7 @@ get_structural_vectors = function(kin_types, duplicates, method = "binary"){
   }
 
   if(duplicates == "any"){
-
+    # List of all languages that will be converted
     listed_languages = unique(kinterms_ss$Language_ID)
 
     # how many comparisons will there be?
@@ -62,7 +71,7 @@ get_structural_vectors = function(kin_types, duplicates, method = "binary"){
     structural_vectors = matrix(NA, nrow = length(listed_languages), ncol = n_comparisons)
 
     for(i in seq_along(listed_languages)){
-
+      # subset to one language
       kinterm_language = subset(kinterms_ss, subset = kinterms_ss$Language_ID == listed_languages[i])
 
       # ensure sorting is always the same
