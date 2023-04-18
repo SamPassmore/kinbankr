@@ -88,10 +88,11 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
       structural_vectors[i,] = comparison_matrix[lower.tri(comparison_matrix)]
     }
 
-    # name the columns
+    # name the matrix
     possible_names = outer(colnames(comparison_matrix), colnames(comparison_matrix), paste0)
     vector_names = possible_names[lower.tri(comparison_matrix)]
-    colnames(structural_vectors) = vector_names
+    dimnames(structural_vectors) = list(listed_languages, vector_names)
+
   }
 
   structural_vectors

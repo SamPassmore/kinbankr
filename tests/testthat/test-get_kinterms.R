@@ -10,6 +10,6 @@ sibling_vectors = get_structural_vectors(kin_types = siblings, duplicates = "any
 
 testthat::test_that("Making structural vectors...", {
   expect_equal(sibling_vectors, structure(c(FALSE, TRUE, FALSE), dim = c(1L, 3L),
-                                          dimnames = list(NULL, c("meZmeB", "myBmeB", "myBmeZ")))
+                                          dimnames = list(c("v_standardenglishstan1293"), c("meZmeB", "myBmeB", "myBmeZ")))
   )
 })
