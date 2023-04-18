@@ -6,12 +6,14 @@
 #'
 #' @param kin_types a character list of kintypes to extract. See kin_types() for a list of possibilities.
 #' @param duplicates In some cases, languages have more than one kinterm per category.
+#' @param languages a vector of Language IDs for which to calculate structural vectors for.
+#' @param method the method for which to calculate the structural vectory. Options: binary (more to come).
 #'
 #' @return a matrix with columns of kin types, and rows with languages. Each cell contains a kinterm.
 #' @export
 #'
 #' @examples
-get_structural_vectors = function(kin_types, duplicates, method = "binary"){
+get_structural_vectors = function(kin_types, duplicates, languages = NULL, method = "binary"){
   require(dplyr)
   require(tidyr)
   require(numbers)
@@ -28,6 +30,9 @@ get_structural_vectors = function(kin_types, duplicates, method = "binary"){
 
   # Remove occasions where the kin terms is NA
   kinterms_ss = kinterms_ss[!is.na(kinterms_ss$Form),]
+
+  if(!is.null(languages))
+    kinterms_ss = subset(kinterms_ss, subset = kinterms_ss$Language_ID %in% languages)
 
   # only keep languages that contains all kin types
   kinterms_bylanguage = split(kinterms_ss$Parameter_ID, kinterms_ss$Language_ID)
