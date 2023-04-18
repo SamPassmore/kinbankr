@@ -26,8 +26,6 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
   # Subset (ss) to the kinterms we want
   kinterms_ss = kin_terms[kin_terms$Parameter_ID %in% kin_types,]
 
-  ### This subset needs to be to all languages that contains all kin types ###
-
   # Remove occasions where the kin terms is NA
   kinterms_ss = kinterms_ss[!is.na(kinterms_ss$Form),]
 
@@ -90,6 +88,10 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
       structural_vectors[i,] = comparison_matrix[lower.tri(comparison_matrix)]
     }
 
+    # name the columns
+    possible_names = outer(colnames(comparison_matrix), colnames(comparison_matrix), paste0)
+    vector_names = possible_names[lower.tri(comparison_matrix)]
+    colnames(structural_vectors) = vector_names
   }
 
   structural_vectors
