@@ -77,13 +77,18 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
       # subset to one language
       kinterm_language = subset(kinterms_ss, subset = kinterms_ss$Language_ID == listed_languages[i])
 
-      # ensure sorting is always the same
+      # sort dataset by the order of the kin types given
+      kinterm_language$Parameter_ID = factor(kinterm_language$Parameter_ID, levels = kin_types)
       kinterm_language = kinterm_language[order(kinterm_language$Parameter_ID),]
 
       # split dataset by kin type
       kinterms_list = split(kinterm_language$Form, kinterm_language$Parameter_ID)
 
       comparison_matrix = outer(kinterms_list, kinterms_list, Vectorize(\(x , y) any(x %in% y)))
+
+      if(!all(colnames(comparison_matrix) == kin_types)){
+        stop("There has been a sorting problem. Please raise an issue at github.com/SamPassmore/kinbankr")
+      }
 
       structural_vectors[i,] = comparison_matrix[lower.tri(comparison_matrix)]
     }
