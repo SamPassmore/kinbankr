@@ -39,11 +39,17 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
 
   kinterms_ss = kinterms_ss[kinterms_ss$Language_ID %in% keep_languages,]
 
+  # List of all languages that will be converted
+  listed_languages = unique(kinterms_ss$Language_ID)
+
   if(duplicates == "random"){
     random_slice = kinterms_ss %>%
       group_by(Language_ID, Parameter_ID) %>%
       slice_sample(n = 1) %>%
       ungroup()
+
+    random_slice$Parameter_ID = factor(random_slice$Parameter_ID, levels = kin_types)
+    random_slice = random_slice[order(random_slice$Parameter_ID),]
 
     # make wide
     random_w = tidyr::spread(random_slice[,c("Language_ID", "Parameter_ID", "Form")], key = "Parameter_ID", value = "Form")
@@ -62,11 +68,14 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
 
     # transpose
     structural_vectors = t(structural_vectors)
+
+    # name
+    possible_names = outer(colnames(random_w_sv), colnames(random_w_sv), paste0)
+    vector_names = possible_names[lower.tri(possible_names)]
+    dimnames(structural_vectors) = list(random_w$Language_ID, vector_names)
   }
 
   if(duplicates == "any"){
-    # List of all languages that will be converted
-    listed_languages = unique(kinterms_ss$Language_ID)
 
     # how many comparisons will there be?
     n_comparisons = choose(length(kin_types), 2)
