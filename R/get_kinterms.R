@@ -43,8 +43,18 @@ get_structural_vectors = function(kin_types, duplicates, languages = NULL, metho
   listed_languages = unique(kinterms_ss$Language_ID)
 
   if(duplicates == "random"){
+
+    random_slice = c()
+    for(i in seq_along(listed_languages)){
+      cat("Language:", listed_languages[i], "\n")
+      language_terms = kinterms_ss[kinterms_ss$Language_ID == listed_languages[i],]
+      unique_kinterms = select_kinterms(language_terms)
+      language_terms = language_terms[language_terms$Form %in% unique_kinterms,]
+      random_slice = rbind(random_slice, language_terms)
+    }
+
     random_slice = kinterms_ss %>%
-      group_by(Language_ID, Parameter_ID) %>%
+      group_by(Language_ID, Parameter_ID, Form) %>%
       slice_sample(n = 1) %>%
       ungroup()
 
@@ -138,6 +148,32 @@ get_vector = function(kin_data, method = "binary"){
   m
 }
 
+#' Randomly select kinterms
+#'
+#' @description
+#' This function ensures that we randomly select kinterms to determine a system, rather than select a kinterm at random for each kin type.
+#'
+#'
+#' @param df data frame from Kinbank
+#'
+#' @return
+#' @export
+#'
+#' @examples
+select_kinterms = function(df){
+  tt = table(df$Form, df$Parameter_ID) # table of all kinterms
+  tt2 = tt # Duplicate object for random deletions
+  rr = 1:nrow(tt)
+  while(!all(colSums(tt2) == 1)){
+
+    # randomly delete a kinterm and see if all kin types are still present
+    rm = sample(rr, 1)
+    tt2 = tt[-rm,]
+    # remove that row once you've tried it.
+    rr = rr[rr != rm]
+  }
+  rownames(tt2)
+}
 
 #' Calculate distances within a language
 #'
