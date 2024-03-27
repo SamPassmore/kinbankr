@@ -163,7 +163,8 @@ get_vector = function(kin_data, method = "binary"){
 select_kinterms = function(df){
   tt = table(df$Form, df$Parameter_ID) # table of all kinterms
   tt2 = tt # Duplicate object for random deletions
-  rr = 1:nrow(tt)
+  c_names = colnames(tt)[colSums(tt) > 1] # identify columns where there are multiple possibilities
+  rr = which(rowSums(tt[,c_names]) == 1)
   while(!all(colSums(tt2) == 1)){
 
     # randomly delete a kinterm and see if all kin types are still present
